@@ -16,8 +16,16 @@ export interface Roll {
   expiresAt: string;
 }
 
-// Shared in-memory store for local dev
-const localStore = new Map<string, Roll>();
+// Use global to ensure the Map is shared across all routes in development
+const globalForStore = globalThis as unknown as {
+  localStore: Map<string, Roll> | undefined;
+};
+
+// Shared in-memory store for local dev - use global to ensure singleton
+const localStore = globalForStore.localStore ?? new Map<string, Roll>();
+if (!globalForStore.localStore) {
+  globalForStore.localStore = localStore;
+}
 
 export async function getStore() {
   // Check if we're in Vercel with KV configured

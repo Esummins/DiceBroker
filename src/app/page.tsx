@@ -2,13 +2,14 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import DiceIcon from "@/icons/DiceIcon";
 
 export default function Home() {
   const router = useRouter();
   const [numDice, setNumDice] = useState(1);
   const [numSides, setNumSides] = useState(6);
   const [label, setLabel] = useState("");
-  const [showSum, setShowSum] = useState(true);
+  const [showSum, setShowSum] = useState(false);
   const [withReplacement, setWithReplacement] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
 
@@ -43,7 +44,10 @@ export default function Home() {
   return (
     <main className="max-w-2xl mx-auto px-4 py-16">
       <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold mb-4">🎲 Dice Broker</h1>
+        <div className="flex items-center justify-center gap-4 mb-4">
+          <DiceIcon size={56} className="flex-shrink-0" />
+          <h1 className="text-4xl font-bold font-silkscreen leading-none -translate-y-[0.2rem]">Dice Broker</h1>
+        </div>
         <p className="text-blue-300 text-lg">
           Fair, verifiable random rolls for online transactions.
           <br />
@@ -107,18 +111,6 @@ export default function Home() {
             <label className="flex items-center gap-3 cursor-pointer">
               <input
                 type="checkbox"
-                checked={showSum}
-                onChange={(e) => setShowSum(e.target.checked)}
-                className="w-4 h-4 rounded border-blue-700 bg-blue-800 text-accent-600 focus:ring-2 focus:ring-accent-500"
-              />
-              <span className="text-sm text-blue-200">
-                Show sum total (if unchecked, only individual dice shown)
-              </span>
-            </label>
-
-            <label className="flex items-center gap-3 cursor-pointer">
-              <input
-                type="checkbox"
                 checked={withReplacement}
                 onChange={(e) => setWithReplacement(e.target.checked)}
                 className="w-4 h-4 rounded border-blue-700 bg-blue-800 text-accent-600 focus:ring-2 focus:ring-accent-500"
@@ -132,6 +124,18 @@ export default function Home() {
                 ⚠️ Number of dice cannot exceed die sides when duplicates are not allowed
               </p>
             )}
+
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={showSum}
+                onChange={(e) => setShowSum(e.target.checked)}
+                className="w-4 h-4 rounded border-blue-700 bg-blue-800 text-accent-600 focus:ring-2 focus:ring-accent-500"
+              />
+              <span className="text-sm text-blue-200">
+                Show sum total (if unchecked, only individual dice shown)
+              </span>
+            </label>
           </div>
 
           <button

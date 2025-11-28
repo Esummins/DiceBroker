@@ -7,6 +7,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        silkscreen: ['var(--font-silkscreen)', 'monospace'],
+      },
       colors: {
         // Desaturated blue palette
         blue: {

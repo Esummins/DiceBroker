@@ -1,5 +1,15 @@
 import type { Metadata } from "next";
+import { Silkscreen } from "next/font/google";
 import "./globals.css";
+
+const silkscreen = Silkscreen({
+  weight: ["400", "700"],
+  subsets: ["latin"],
+  variable: "--font-silkscreen",
+});
+
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ||
+                (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
 
 export const metadata: Metadata = {
   title: "Dice Broker - Trusted Random Rolls",
@@ -10,7 +20,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/api/og",
+        url: `${baseUrl}/api/og`,
         width: 1200,
         height: 630,
         alt: "DiceBroker",
@@ -21,7 +31,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Dice Broker - Trusted Random Rolls",
     description: "Fair, verifiable random rolls for online transactions",
-    images: ["/api/og"],
+    images: [`${baseUrl}/api/og`],
   },
 };
 
@@ -31,7 +41,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={silkscreen.variable}>
       <body className="bg-blue-950 text-blue-50 min-h-screen antialiased">
         {children}
         <a

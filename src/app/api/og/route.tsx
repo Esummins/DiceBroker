@@ -1,8 +1,13 @@
 import { ImageResponse } from "next/og";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 
 export async function GET() {
+  // Load Silkscreen font
+  const fontData = await fetch(
+    new URL('https://fonts.gstatic.com/s/silkscreen/v1/m8JXjfVPf62XiF7kO-i9ULRvamODxdI.woff')
+  ).then((res) => res.arrayBuffer());
+
   return new ImageResponse(
     (
       <div
@@ -24,23 +29,25 @@ export async function GET() {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            gap: "20px",
+            gap: "30px",
           }}
         >
-          <div
-            style={{
-              fontSize: 120,
-              lineHeight: 1,
-            }}
-          >
-            🎲
-          </div>
+          {/* SVG Dice Icon */}
+          <svg width="120" height="120" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <rect x="15" y="15" width="70" height="70" rx="12" fill="#e0e7ff" stroke="#2563eb" stroke-width="3"/>
+            <circle cx="35" cy="35" r="6" fill="#1e3a8a"/>
+            <circle cx="50" cy="50" r="6" fill="#1e3a8a"/>
+            <circle cx="65" cy="35" r="6" fill="#1e3a8a"/>
+            <circle cx="35" cy="65" r="6" fill="#1e3a8a"/>
+            <circle cx="65" cy="65" r="6" fill="#1e3a8a"/>
+          </svg>
           <div
             style={{
               fontSize: 72,
               fontWeight: "bold",
               color: "#e0e7ff",
               letterSpacing: "-0.02em",
+              fontFamily: "Silkscreen",
             }}
           >
             DiceBroker
@@ -62,6 +69,14 @@ export async function GET() {
     {
       width: 1200,
       height: 630,
+      fonts: [
+        {
+          name: 'Silkscreen',
+          data: fontData,
+          style: 'normal',
+          weight: 700,
+        },
+      ],
     }
   );
 }

@@ -19,13 +19,13 @@ export async function generateMetadata({
   }
 
   const diceNotation = `${roll.numDice}d${roll.numSides}`;
-  const status = roll.isRevealed ? "🎯 Revealed" : "🔒 Sealed";
+  const status = roll.isRevealed ? "Revealed" : "Sealed";
   const total = roll.isRevealed && roll.results
     ? roll.results.reduce((a: number, b: number) => a + b, 0)
     : null;
 
   const title = roll.isRevealed && total !== null
-    ? `${status} Roll: ${diceNotation} = ${total} - DiceBroker`
+    ? `${status} Roll: ${diceNotation} ${total} - DiceBroker`
     : `${status} Roll: ${diceNotation} - DiceBroker`;
 
   let description = `${diceNotation} roll on DiceBroker`;
@@ -38,7 +38,11 @@ export async function generateMetadata({
     description += ` - Sealed and ready to reveal`;
   }
 
-  const ogImageUrl = `/api/og/roll/${id}`;
+  // Construct absolute URL for OG image
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ||
+                  process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` :
+                  'http://localhost:3000';
+  const ogImageUrl = `${baseUrl}/api/og/roll/${id}`;
 
   return {
     title,

@@ -2,6 +2,9 @@
 
 import { useState, useEffect, use } from "react";
 import Link from "next/link";
+import LockIcon from "@/icons/LockIcon";
+import TargetIcon from "@/icons/TargetIcon";
+import DiceIcon from "@/icons/DiceIcon";
 
 interface RollData {
   id: string;
@@ -132,7 +135,9 @@ export default function RollPageClient({
   if (!roll) {
     return (
       <main className="max-w-2xl mx-auto px-4 py-16 text-center">
-        <div className="text-4xl animate-pulse">🎲</div>
+        <div className="animate-pulse flex justify-center">
+          <DiceIcon size={64} />
+        </div>
         <p className="mt-4 text-blue-300">Loading roll...</p>
       </main>
     );
@@ -143,7 +148,7 @@ export default function RollPageClient({
   return (
     <main className="max-w-2xl mx-auto px-4 py-16">
       <div className="text-center mb-8">
-        <Link href="/" className="text-accent-400 hover:text-accent-300">
+        <Link href="/" className="text-accent-400 hover:text-accent-300 font-silkscreen">
           ← Back to Dice Broker
         </Link>
       </div>
@@ -151,8 +156,8 @@ export default function RollPageClient({
       <div className="bg-blue-900 rounded-xl p-8 shadow-xl border border-blue-800">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="text-5xl mb-4">
-            {roll.isRevealed ? "🎯" : "🔒"}
+          <div className="mb-0 flex justify-center">
+            {roll.isRevealed ? <TargetIcon size={60} /> : <LockIcon size={80} />}
           </div>
           <h1 className="text-2xl font-bold">
             {roll.isRevealed ? "Roll Revealed" : "Sealed Roll"}
@@ -257,9 +262,14 @@ export default function RollPageClient({
             <button
               onClick={handleReveal}
               disabled={isRevealing}
-              className="w-full py-3 px-4 bg-accent-600 hover:bg-accent-700 disabled:bg-accent-800 disabled:cursor-not-allowed rounded-lg font-semibold transition-colors shadow-lg"
+              className="w-full py-3 px-4 bg-accent-600 hover:bg-accent-700 disabled:bg-accent-800 disabled:cursor-not-allowed rounded-lg font-semibold transition-colors shadow-lg flex items-center justify-center gap-2"
             >
-              {isRevealing ? "Revealing..." : "🎲 Reveal Roll"}
+              {isRevealing ? "Revealing..." : (
+                <>
+                  <DiceIcon size={20} />
+                  <span>Reveal Roll</span>
+                </>
+              )}
             </button>
           )}
           <button
@@ -273,7 +283,8 @@ export default function RollPageClient({
         {/* Trust notes */}
         {!roll.isRevealed ? (
           <div className="mt-6 p-4 bg-accent-900/30 border border-accent-800 rounded-lg text-sm text-accent-200">
-            <strong>🔐 Buyer tip:</strong> Check the creation timestamp above.
+            <LockIcon size={20} className="inline-flex h-[1.2rem] w-[1.2rem] align-sub" />
+            {" "}<strong>Buyer tip:</strong> Check the creation timestamp above.
             If this roll was created before your order, the seller may have
             pre-rolled multiple times. Only trust rolls created after your
             transaction was agreed upon.
