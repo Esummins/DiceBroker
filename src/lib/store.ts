@@ -13,6 +13,7 @@ export interface Roll {
   isRevealed: boolean;
   showSum: boolean;
   withReplacement: boolean;
+  expiresAt: string;
 }
 
 // Shared in-memory store for local dev
@@ -24,14 +25,20 @@ export async function getStore() {
     const { kv } = await import("@vercel/kv");
     return {
       get: async (key: string) => kv.get<Roll>(key),
-      set: async (key: string, value: Roll) => kv.set(key, value),
+      set: async (key: string, value: Roll, ttlSeconds?: number) => {
+        if (ttlSeconds) {
+          return kv.set(key, value, { ex: ttlSeconds });
+        }
+        return kv.set(key, value);
+      },
     };
   }
   // Local development fallback - shared across all routes
   return {
     get: async (key: string) => localStore.get(key) || null,
-    set: async (key: string, value: Roll) => {
+    set: async (key: string, value: Roll, ttlSeconds?: number) => {
       localStore.set(key, value);
+      // Note: TTL not enforced in local dev
     },
   };
 }

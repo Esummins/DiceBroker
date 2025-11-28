@@ -88,6 +88,10 @@ export async function POST(request: NextRequest) {
     const salt = nanoid(32);
     const resultsHash = await hashResults(results, salt);
 
+    const now = new Date();
+    const TWO_WEEKS_MS = 14 * 24 * 60 * 60 * 1000;
+    const expiresAt = new Date(now.getTime() + TWO_WEEKS_MS);
+
     const roll: Roll = {
       id,
       numDice,
@@ -95,15 +99,17 @@ export async function POST(request: NextRequest) {
       label: label || "",
       results,
       resultsHash,
-      createdAt: new Date().toISOString(),
+      createdAt: now.toISOString(),
       revealedAt: null,
       isRevealed: false,
       showSum,
       withReplacement,
+      expiresAt: expiresAt.toISOString(),
     };
 
     const store = await getStore();
-    await store.set(`roll:${id}`, roll);
+    const TWO_WEEKS_SECONDS = 14 * 24 * 60 * 60;
+    await store.set(`roll:${id}`, roll, TWO_WEEKS_SECONDS);
 
     return NextResponse.json({
       id,
@@ -115,6 +121,7 @@ export async function POST(request: NextRequest) {
       isRevealed: false,
       showSum,
       withReplacement,
+      expiresAt: roll.expiresAt,
     });
   } catch (error) {
     console.error("Error creating roll:", error);

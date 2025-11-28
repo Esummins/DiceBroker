@@ -4,6 +4,25 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Dice Broker - Trusted Random Rolls",
   description: "Fair, verifiable random rolls for online transactions",
+  openGraph: {
+    title: "Dice Broker - Trusted Random Rolls",
+    description: "Fair, verifiable random rolls for online transactions",
+    type: "website",
+    images: [
+      {
+        url: "/api/og",
+        width: 1200,
+        height: 630,
+        alt: "DiceBroker",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Dice Broker - Trusted Random Rolls",
+    description: "Fair, verifiable random rolls for online transactions",
+    images: ["/api/og"],
+  },
 };
 
 export default function RootLayout({

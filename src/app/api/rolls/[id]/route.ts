@@ -28,6 +28,7 @@ export async function GET(
       total: roll.results.reduce((a, b) => a + b, 0),
       showSum: roll.showSum ?? true,
       withReplacement: roll.withReplacement ?? true,
+      expiresAt: roll.expiresAt,
     });
   } else {
     // Sealed - don't reveal results
@@ -41,6 +42,7 @@ export async function GET(
       isRevealed: false,
       showSum: roll.showSum ?? true,
       withReplacement: roll.withReplacement ?? true,
+      expiresAt: roll.expiresAt,
     });
   }
 }
@@ -62,9 +64,16 @@ export async function POST(
   }
 
   // Reveal the roll
+  const revealTime = new Date();
   roll.isRevealed = true;
-  roll.revealedAt = new Date().toISOString();
-  await store.set(`roll:${id}`, roll);
+  roll.revealedAt = revealTime.toISOString();
+
+  // Update expiration to 1 week from reveal time
+  const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+  roll.expiresAt = new Date(revealTime.getTime() + ONE_WEEK_MS).toISOString();
+
+  const ONE_WEEK_SECONDS = 7 * 24 * 60 * 60;
+  await store.set(`roll:${id}`, roll, ONE_WEEK_SECONDS);
 
   return NextResponse.json({
     id: roll.id,
@@ -79,5 +88,6 @@ export async function POST(
     total: roll.results.reduce((a, b) => a + b, 0),
     showSum: roll.showSum ?? true,
     withReplacement: roll.withReplacement ?? true,
+    expiresAt: roll.expiresAt,
   });
 }

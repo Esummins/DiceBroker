@@ -153,6 +153,9 @@ export default function Home() {
           <li>4. Buyer verifies creation time and reveals the roll</li>
           <li>5. Both see the same verifiable result</li>
         </ol>
+        <p className="mt-4 text-xs text-blue-500">
+          ⏱️ Rolls expire after 2 weeks (unrevealed) or 1 week after reveal
+        </p>
       </div>
     </main>
   );
