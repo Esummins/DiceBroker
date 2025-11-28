@@ -11,6 +11,8 @@ export interface Roll {
   createdAt: string;
   revealedAt: string | null;
   isRevealed: boolean;
+  showSum: boolean;
+  withReplacement: boolean;
 }
 
 // Shared in-memory store for local dev

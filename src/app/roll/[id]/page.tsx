@@ -14,6 +14,8 @@ interface RollData {
   revealedAt?: string;
   isRevealed: boolean;
   total?: number;
+  showSum: boolean;
+  withReplacement: boolean;
 }
 
 function formatDate(isoString: string) {
@@ -150,10 +152,14 @@ export default function RollPage({
         {roll.isRevealed && roll.results ? (
           <div className="bg-blue-950 rounded-lg p-6 mb-6 border border-blue-800">
             <div className="text-center">
-              <div className="text-6xl font-bold text-accent-400 mb-2">
-                {roll.total}
-              </div>
-              <div className="text-blue-300 text-sm mb-4">Total</div>
+              {roll.showSum && (
+                <>
+                  <div className="text-6xl font-bold text-accent-400 mb-2">
+                    {roll.total}
+                  </div>
+                  <div className="text-blue-300 text-sm mb-4">Total</div>
+                </>
+              )}
               <div className="flex flex-wrap justify-center gap-2">
                 {roll.results.map((result, i) => (
                   <div
@@ -164,6 +170,11 @@ export default function RollPage({
                   </div>
                 ))}
               </div>
+              {!roll.showSum && (
+                <div className="text-blue-400 text-xs mt-3">
+                  Individual results only
+                </div>
+              )}
             </div>
           </div>
         ) : (
@@ -186,6 +197,18 @@ export default function RollPage({
           <div className="flex justify-between">
             <span className="text-blue-300">Configuration</span>
             <span className="text-blue-200">{diceNotation}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-blue-300">Roll Type</span>
+            <span className="text-blue-200">
+              {roll.withReplacement ? "With replacement" : "Without replacement (unique)"}
+            </span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-blue-300">Display Mode</span>
+            <span className="text-blue-200">
+              {roll.showSum ? "Sum + Individual" : "Individual only"}
+            </span>
           </div>
           <div className="flex justify-between">
             <span className="text-blue-300">Created</span>
@@ -232,13 +255,21 @@ export default function RollPage({
           </button>
         </div>
 
-        {/* Trust note */}
-        {!roll.isRevealed && (
+        {/* Trust notes */}
+        {!roll.isRevealed ? (
           <div className="mt-6 p-4 bg-accent-900/30 border border-accent-800 rounded-lg text-sm text-accent-200">
             <strong>🔐 Buyer tip:</strong> Check the creation timestamp above.
             If this roll was created before your order, the seller may have
             pre-rolled multiple times. Only trust rolls created after your
             transaction was agreed upon.
+          </div>
+        ) : (
+          <div className="mt-6 p-4 bg-red-900/30 border border-red-800 rounded-lg text-sm text-red-200">
+            <strong>⚠️ Warning:</strong> This roll has already been revealed.
+            If you received this link already revealed, DO NOT complete the
+            transaction. The seller may have generated multiple rolls and sent
+            you the most favorable one. Only accept rolls that YOU reveal
+            yourself.
           </div>
         )}
       </div>

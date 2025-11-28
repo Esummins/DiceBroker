@@ -26,6 +26,8 @@ export async function GET(
       revealedAt: roll.revealedAt,
       isRevealed: true,
       total: roll.results.reduce((a, b) => a + b, 0),
+      showSum: roll.showSum ?? true,
+      withReplacement: roll.withReplacement ?? true,
     });
   } else {
     // Sealed - don't reveal results
@@ -37,6 +39,8 @@ export async function GET(
       resultsHash: roll.resultsHash,
       createdAt: roll.createdAt,
       isRevealed: false,
+      showSum: roll.showSum ?? true,
+      withReplacement: roll.withReplacement ?? true,
     });
   }
 }
@@ -73,5 +77,7 @@ export async function POST(
     revealedAt: roll.revealedAt,
     isRevealed: true,
     total: roll.results.reduce((a, b) => a + b, 0),
+    showSum: roll.showSum ?? true,
+    withReplacement: roll.withReplacement ?? true,
   });
 }

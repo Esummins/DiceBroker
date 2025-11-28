@@ -8,6 +8,8 @@ export default function Home() {
   const [numDice, setNumDice] = useState(1);
   const [numSides, setNumSides] = useState(6);
   const [label, setLabel] = useState("");
+  const [showSum, setShowSum] = useState(true);
+  const [withReplacement, setWithReplacement] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
 
   const handleCreate = async (e: React.FormEvent) => {
@@ -18,7 +20,13 @@ export default function Home() {
       const res = await fetch("/api/rolls", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ numDice, numSides, label }),
+        body: JSON.stringify({
+          numDice,
+          numSides,
+          label,
+          showSum,
+          withReplacement,
+        }),
       });
 
       const data = await res.json();
@@ -95,9 +103,40 @@ export default function Home() {
             />
           </div>
 
+          <div className="space-y-3 pt-2">
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={showSum}
+                onChange={(e) => setShowSum(e.target.checked)}
+                className="w-4 h-4 rounded border-blue-700 bg-blue-800 text-accent-600 focus:ring-2 focus:ring-accent-500"
+              />
+              <span className="text-sm text-blue-200">
+                Show sum total (if unchecked, only individual dice shown)
+              </span>
+            </label>
+
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={withReplacement}
+                onChange={(e) => setWithReplacement(e.target.checked)}
+                className="w-4 h-4 rounded border-blue-700 bg-blue-800 text-accent-600 focus:ring-2 focus:ring-accent-500"
+              />
+              <span className="text-sm text-blue-200">
+                Allow duplicate numbers (if unchecked, each die shows unique value)
+              </span>
+            </label>
+            {!withReplacement && numDice > numSides && (
+              <p className="text-xs text-accent-300 pl-7">
+                ⚠️ Number of dice cannot exceed die sides when duplicates are not allowed
+              </p>
+            )}
+          </div>
+
           <button
             type="submit"
-            disabled={isCreating}
+            disabled={isCreating || (!withReplacement && numDice > numSides)}
             className="w-full py-3 px-4 bg-accent-600 hover:bg-accent-700 disabled:bg-accent-800 disabled:cursor-not-allowed rounded-lg font-semibold transition-colors shadow-lg"
           >
             {isCreating ? "Creating..." : "Create Sealed Roll"}

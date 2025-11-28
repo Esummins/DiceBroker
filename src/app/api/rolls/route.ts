@@ -2,11 +2,38 @@ import { NextRequest, NextResponse } from "next/server";
 import { nanoid } from "nanoid";
 import { getStore, type Roll } from "@/lib/store";
 
-function generateResults(numDice: number, numSides: number): number[] {
+function generateResults(
+  numDice: number,
+  numSides: number,
+  withReplacement: boolean
+): number[] {
   const results: number[] = [];
-  for (let i = 0; i < numDice; i++) {
-    results.push(Math.floor(Math.random() * numSides) + 1);
+
+  if (withReplacement) {
+    // Standard rolling - duplicates allowed
+    for (let i = 0; i < numDice; i++) {
+      results.push(Math.floor(Math.random() * numSides) + 1);
+    }
+  } else {
+    // Without replacement - no duplicates
+    // Note: numDice must be <= numSides for this to work
+    if (numDice > numSides) {
+      throw new Error(
+        "Cannot roll without replacement when numDice > numSides"
+      );
+    }
+
+    const used = new Set<number>();
+    for (let i = 0; i < numDice; i++) {
+      let roll: number;
+      do {
+        roll = Math.floor(Math.random() * numSides) + 1;
+      } while (used.has(roll));
+      used.add(roll);
+      results.push(roll);
+    }
   }
+
   return results;
 }
 
@@ -22,7 +49,13 @@ async function hashResults(results: number[], salt: string): Promise<string> {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { numDice, numSides, label } = body;
+    const {
+      numDice,
+      numSides,
+      label,
+      showSum = true,
+      withReplacement = true,
+    } = body;
 
     // Validate input
     if (!numDice || numDice < 1 || numDice > 20) {
@@ -38,8 +71,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate without replacement constraint
+    if (!withReplacement && numDice > numSides) {
+      return NextResponse.json(
+        {
+          error:
+            "Cannot roll without replacement when number of dice exceeds die sides",
+        },
+        { status: 400 }
+      );
+    }
+
     const id = nanoid(10);
-    const results = generateResults(numDice, numSides);
+    const results = generateResults(numDice, numSides, withReplacement);
     const salt = nanoid(32);
     const resultsHash = await hashResults(results, salt);
 
@@ -53,6 +97,8 @@ export async function POST(request: NextRequest) {
       createdAt: new Date().toISOString(),
       revealedAt: null,
       isRevealed: false,
+      showSum,
+      withReplacement,
     };
 
     const store = await getStore();
@@ -66,6 +112,8 @@ export async function POST(request: NextRequest) {
       resultsHash,
       createdAt: roll.createdAt,
       isRevealed: false,
+      showSum,
+      withReplacement,
     });
   } catch (error) {
     console.error("Error creating roll:", error);
