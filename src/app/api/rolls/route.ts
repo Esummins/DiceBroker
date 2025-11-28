@@ -23,14 +23,15 @@ function generateResults(
       );
     }
 
-    const used = new Set<number>();
+    // Create array of all available numbers [1, 2, 3, ..., numSides]
+    const available = Array.from({ length: numSides }, (_, i) => i + 1);
+
     for (let i = 0; i < numDice; i++) {
-      let roll: number;
-      do {
-        roll = Math.floor(Math.random() * numSides) + 1;
-      } while (used.has(roll));
-      used.add(roll);
-      results.push(roll);
+      // Pick random index from remaining numbers
+      const randomIndex = Math.floor(Math.random() * available.length);
+      // Add to results and remove from available pool
+      results.push(available[randomIndex]);
+      available.splice(randomIndex, 1);
     }
   }
 
