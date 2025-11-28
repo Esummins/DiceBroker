@@ -1,5 +1,7 @@
 import { ImageResponse } from "next/og";
 import { getStore } from "@/lib/store";
+import fs from "fs";
+import path from "path";
 
 export const runtime = "nodejs";
 
@@ -7,10 +9,9 @@ export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  // Load Silkscreen font
-  const fontData = await fetch(
-    new URL('https://fonts.gstatic.com/s/silkscreen/v1/m8JXjfVPf62XiF7kO-i9ULRvamODxdI.woff')
-  ).then((res) => res.arrayBuffer());
+  // Load Silkscreen font from public directory
+  const fontPath = path.join(process.cwd(), 'public', 'fonts', 'silkscreen-bold.ttf');
+  const fontData = fs.readFileSync(fontPath);
 
   const { id } = await params;
   console.log('[OG Image] Fetching roll:', id);
